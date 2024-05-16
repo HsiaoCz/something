@@ -1,25 +1,23 @@
 package slick
 
 import (
-	"fmt"
 	"net/http"
 )
 
-type Handlerfunc func(w http.ResponseWriter, r *http.Request)
+type Handlerfunc func(*Context)
 
 type Slick struct {
-	router map[string]Handlerfunc
+	router *router
 }
 
 func New() *Slick {
 	return &Slick{
-		router: make(map[string]Handlerfunc),
+		router: newRouter(),
 	}
 }
 
 func (s *Slick) addRoute(method string, pattern string, handler Handlerfunc) {
-	key := method + "-" + pattern
-	s.router[key] = handler
+	s.router.addRoute(method, pattern, handler)
 }
 
 // GET defines the method to add GET request
@@ -37,11 +35,7 @@ func (s *Slick) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, s)
 }
 
-func (s *Slick) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	key := req.Method + "-" + req.URL.Path
-	if handler, ok := s.router[key]; ok {
-		handler(w, req)
-	} else {
-		fmt.Fprintf(w, "404 NOT FOUND: %s\n", req.URL)
-	}
+func (s *Slick) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	c := newContext(w, r)
+	s.router.handle(c)
 }

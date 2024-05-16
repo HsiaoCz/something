@@ -14,6 +14,8 @@ func main() {
 	app.Run(":9001")
 }
 
-func HandleGetUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello my man"))
+func HandleGetUser(c *slick.Context) {
+	c.JSON(http.StatusOK, slick.H{
+		"message": "all is well",
+	})
 }
