@@ -2,6 +2,7 @@ package slick
 
 import (
 	"net/http"
+	"strings"
 )
 
 type Handlerfunc func(*Context)
@@ -41,6 +42,13 @@ func (s *Slick) Run(addr string) (err error) {
 }
 
 func (s *Slick) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var middlewares []Handlerfunc
+	for _, group := range s.groups {
+		if strings.HasPrefix(r.URL.Path, group.prefix) {
+			middlewares = append(middlewares, group.middlewares...)
+		}
+	}
 	c := newContext(w, r)
+	c.handlers = middlewares
 	s.router.handle(c)
 }

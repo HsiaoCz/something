@@ -3,10 +3,10 @@ package slick
 import "log"
 
 type RouterGroup struct {
-	prefix     string
-	middleware []Handlerfunc
-	parent     *RouterGroup
-	slick      *Slick
+	prefix      string
+	middlewares []Handlerfunc
+	parent      *RouterGroup
+	slick       *Slick
 }
 
 // Group is defined to create a new RouterGroup
@@ -36,4 +36,8 @@ func (g *RouterGroup) GET(pattern string, handler Handlerfunc) {
 // POST defines the method to add POST request
 func (g *RouterGroup) POST(pattern string, handler Handlerfunc) {
 	g.addRoute("POST", pattern, handler)
+}
+
+func (g *RouterGroup) Use(middleware ...Handlerfunc) {
+	g.middlewares = append(g.middlewares, middleware...)
 }
