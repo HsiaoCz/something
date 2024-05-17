@@ -9,12 +9,12 @@ import (
 func main() {
 	r := slick.New()
 	r.GET("/index", func(c *slick.Context) {
-		c.HTML(http.StatusOK, "<h1>Index Page</h1>")
+		c.HTML(http.StatusOK, "<h1>Index Page</h1>", nil)
 	})
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/", func(c *slick.Context) {
-			c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
+			c.HTML(http.StatusOK, "<h1>Hello Gee</h1>", nil)
 		})
 
 		v1.GET("/hello", func(c *slick.Context) {

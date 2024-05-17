@@ -1,6 +1,10 @@
 package slick
 
-import "log"
+import (
+	"log"
+	"net/http"
+	"path"
+)
 
 type RouterGroup struct {
 	prefix      string
@@ -40,4 +44,26 @@ func (g *RouterGroup) POST(pattern string, handler Handlerfunc) {
 
 func (g *RouterGroup) Use(middleware ...Handlerfunc) {
 	g.middlewares = append(g.middlewares, middleware...)
+}
+
+func (g *RouterGroup) createStaticHandler(relativePath string, fs http.FileSystem) Handlerfunc {
+	absolutePath := path.Join(g.prefix, relativePath)
+	fileServer := http.StripPrefix(absolutePath, http.FileServer(fs))
+	return func(c *Context) {
+		file := c.Param("filepath")
+		// Check if file exists and/or if we have permission to access it
+		if _, err := fs.Open(file); err != nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+
+		fileServer.ServeHTTP(c.W, c.R)
+	}
+}
+
+func (g *RouterGroup) Static(relativePath string, root string) {
+	handler := g.createStaticHandler(relativePath, http.Dir(root))
+	urlPattern := path.Join(relativePath, "/*filepath")
+	// Register GET handlers
+	g.GET(urlPattern, handler)
 }

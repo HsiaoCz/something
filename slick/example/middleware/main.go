@@ -23,7 +23,7 @@ func main() {
 	r := slick.New()
 	r.Use(slick.Logger()) // global midlleware
 	r.GET("/", func(c *slick.Context) {
-		c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
+		c.HTML(http.StatusOK, "<h1>Hello some</h1>", nil)
 	})
 
 	v2 := r.Group("/v2")

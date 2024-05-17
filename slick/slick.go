@@ -3,14 +3,17 @@ package slick
 import (
 	"net/http"
 	"strings"
+	"text/template"
 )
 
 type Handlerfunc func(*Context)
 
 type Slick struct {
 	*RouterGroup
-	router *router
-	groups []*RouterGroup
+	router        *router
+	groups        []*RouterGroup
+	htmlTemplates *template.Template // for html render
+	funcMap       template.FuncMap   // for html render
 }
 
 func New() *Slick {
@@ -50,5 +53,14 @@ func (s *Slick) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	c := newContext(w, r)
 	c.handlers = middlewares
+	c.slick = s
 	s.router.handle(c)
+}
+
+func (s *Slick) SetFuncMap(funcMap template.FuncMap) {
+	s.funcMap = funcMap
+}
+
+func (s *Slick) LoadHTMLGlob(pattern string) {
+	s.htmlTemplates = template.Must(template.New("").Funcs(s.funcMap).ParseGlob(pattern))
 }

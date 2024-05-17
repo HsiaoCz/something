@@ -18,6 +18,7 @@ type Context struct {
 	// midleware
 	handlers []Handlerfunc
 	index    int
+	slick    *Slick
 }
 
 func newContext(w http.ResponseWriter, r *http.Request) *Context {
@@ -67,10 +68,12 @@ func (c *Context) Data(code int, data []byte) {
 	c.W.Write(data)
 }
 
-func (c *Context) HTML(code int, html string) {
+func (c *Context) HTML(code int, name string, data any) {
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)
-	c.W.Write([]byte(html))
+	if err := c.slick.htmlTemplates.ExecuteTemplate(c.W, name, data); err != nil {
+		c.Fail(500, err.Error())
+	}
 }
 
 func (c *Context) Param(key string) string {
