@@ -70,6 +70,5 @@ func (c *Context) HTML(code int, html string) {
 }
 
 func (c *Context) Param(key string) string {
-	value, _ := c.Params[key]
-	return value
+	return c.Params[key]
 }

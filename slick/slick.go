@@ -7,13 +7,18 @@ import (
 type Handlerfunc func(*Context)
 
 type Slick struct {
+	*RouterGroup
 	router *router
+	groups []*RouterGroup
 }
 
 func New() *Slick {
-	return &Slick{
+	slick := &Slick{
 		router: newRouter(),
 	}
+	slick.RouterGroup = &RouterGroup{slick: slick}
+	slick.groups = []*RouterGroup{slick.RouterGroup}
+	return slick
 }
 
 func (s *Slick) addRoute(method string, pattern string, handler Handlerfunc) {

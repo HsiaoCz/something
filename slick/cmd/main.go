@@ -12,6 +12,7 @@ func main() {
 	app.GET("/user", HandleGetUser)
 	app.GET("/hello", HandleHello)
 	app.GET("/hello/:name", HandleHelloName)
+	app.POST("/hello/something", HandleHelloSomething)
 	app.Run(":9001")
 }
 
@@ -30,5 +31,11 @@ func HandleHello(c *slick.Context) {
 func HandleHelloName(c *slick.Context) {
 	c.JSON(http.StatusOK, slick.H{
 		"message": c.Param("name"),
+	})
+}
+
+func HandleHelloSomething(c *slick.Context) {
+	c.JSON(http.StatusOK, slick.H{
+		"message": "something good",
 	})
 }
