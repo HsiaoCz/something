@@ -3,12 +3,14 @@ package corm
 import (
 	"database/sql"
 
+	"github.com/HsiaoCz/something/corm/dialect"
 	"github.com/HsiaoCz/something/corm/logger"
 	"github.com/HsiaoCz/something/corm/session"
 )
 
 type Engine struct {
-	db *sql.DB
+	db      *sql.DB
+	dialect dialect.Dialect
 }
 
 func NewEngine(driver, source string) (e *Engine, err error) {
@@ -22,7 +24,13 @@ func NewEngine(driver, source string) (e *Engine, err error) {
 		logger.Error(err)
 		return
 	}
-	e = &Engine{db: db}
+	// make sure the specific dialect exists
+	dial, ok := dialect.GetDialect(driver)
+	if !ok {
+		logger.Errorf("dialect %s Not Found", driver)
+		return
+	}
+	e = &Engine{db: db, dialect: dial}
 	logger.Info("Connect database success")
 	return
 }
@@ -35,5 +43,5 @@ func (engine *Engine) Close() {
 }
 
 func (engine *Engine) NewSession() *session.Session {
-	return session.New(engine.db)
+	return session.New(engine.db, engine.dialect)
 }

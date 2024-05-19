@@ -4,17 +4,24 @@ import (
 	"database/sql"
 	"strings"
 
+	"github.com/HsiaoCz/something/corm/dialect"
 	"github.com/HsiaoCz/something/corm/logger"
+	"github.com/HsiaoCz/something/corm/schema"
 )
 
 type Session struct {
-	db      *sql.DB
-	sql     strings.Builder
-	sqlVars []interface{}
+	db       *sql.DB
+	dialect  dialect.Dialect
+	refTable *schema.Schema
+	sql      strings.Builder
+	sqlVars  []interface{}
 }
 
-func New(db *sql.DB) *Session {
-	return &Session{db: db}
+func New(db *sql.DB, dialect dialect.Dialect) *Session {
+	return &Session{
+		db:      db,
+		dialect: dialect,
+	}
 }
 
 func (s *Session) Clear() {
