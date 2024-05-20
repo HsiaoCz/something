@@ -15,12 +15,6 @@ func (f Foo) Sum(args Args, reply *int) error {
 	return nil
 }
 
-// it's not a exported Method
-func (f Foo) sum(args Args, reply *int) error {
-	*reply = args.Num1 + args.Num2
-	return nil
-}
-
 func _assert(condition bool, msg string, v ...interface{}) {
 	if !condition {
 		panic(fmt.Sprintf("assertion failed: "+msg, v...))
